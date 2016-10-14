@@ -42,7 +42,7 @@ Workers API in NativeScript is loosely based on the [Dedicated Web Workers API](
  - `onmessage(message)` - handle incoming messages sent from the main thread. The message object exposes the following properties:
     - `message.data` - the message's content, as sent in the main thread's `postMessage`
  - `onerror(error)` - handle uncaught errors occurring during execution of functions inside the Worker Scope (worker thread). The `error` parameter contains the uncaught error. If the handler returns a true-like value, the message will not propagate to the Worker instance's `onerror` handler on the main thread. After `onerror` is called the worker thread, execution is not terminated and the worker is still capable of sending/receiving messages.
- - `onclose()` - handle any "clean-up" work; suitable for freeing up resources, closing streams and sockets. It is guaranteed to be the last JavaScript code executed in the worker thread.
+ - `onclose()` - handle any "clean-up" work; suitable for freeing up resources, closing streams and sockets.
 
 ## Sample Usage
 
