@@ -108,12 +108,13 @@ Workers API in NativeScript is loosely based on the [Dedicated Web Workers API](
  For optimal results when using the Workers API, follow these guidelines:
   - Always make sure you close the worker threads, using the appropriate API (`terminate()` or `close()`), when the worker's finished its job. If Worker instances become unreachable in the scope you are working in before you are able to terminate it, you will be able to close it only from inside the worker script itself by calling the `close()` function.
   - Workers are not a general solution for all performance-related problems. Starting a Worker has an overhead of its own, and may sometimes be slower than just processing a quick task. Optimize DB queries, or rethink complex application logic before resorting to workers.
+  - Since worker threads have access to the entire native SDK, the NativeScript developer must take care of all the synchronization when calling APIs which are not guaranteed to be thread-safe from more than one thread.
 
 ## Limitations
 
  There are certain limitations to keep in mind when working with Threads:
   - You have **no direct access** to JavaScript objects and variables from other threads. Data is sent back and forth only with `postMessage`.
-  - You can **ONLY** send **JSON-serializable** objects from one thread to another. That means that native objects (Android, Objective-C) in JavaScript wrappers will be empty, even if you try to use them on another thread.
-  - You **cannot access or change UI Views** on a worker thread. Attempting to do so will cause an exception to be thrown inside the invoking thread on Android and undefined behaviour on iOS.
+  - You can **ONLY** send **JSON-serializable** objects from one thread to another. Under the hood `postMessage` serializes the message in JSON format, passes it to the other thread and deserializes it. Keep in mind that in most of the cases, JSON serializing a native object results in an empty JavaScript object (`{}`). That means that if you try to pass a native wrapper object to `postMessage()` a pure empty JavaScript object will be received on the other side. In the current workers implementation there is no concept of posting/sharing/transfering/moving of native objects between threads. It may be supported in future releases.
+  - You **cannot access UI related APIs** on a worker thread. Attempting to do so will cause an exception to be thrown inside the invoking thread on Android and undefined behaviour on iOS. Keep in mind that this limitation is also valid for native applications. In both Andorid and iOS, UI operations must be executed on the main thread.
   - Worker scripts are **not debuggable** as of NativeScript 2.4.
   - Workers **cannot** be created inside other worker threads.
